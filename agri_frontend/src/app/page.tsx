@@ -1,101 +1,102 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+const Home = () => {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h1>Agriculture AI Dashboard</h1>
+        <p>
+          Empowering farmers and agricultural stakeholders with AI-driven
+          insights.
+        </p>
+      </header>
+      <main style={styles.mainContent}>
+        <section style={styles.features}>
+          <h2>Key Features</h2>
+          <ul>
+            <li>
+              <Link href="/crop-prediction">Crop Prediction</Link>: AI-driven
+              suggestions for optimal crop selection.
+            </li>
+            <li>
+              <Link href="/soil-health">Soil Health Monitoring</Link>: Real-time
+              soil health analysis via IoT sensors.
+            </li>
+            <li>
+              <Link href="/pest-prediction">Pest Prediction</Link>: Predictive
+              insights on pest risks for proactive management.
+            </li>
+            <li>
+              <Link href="/real-time-monitoring/climate-history">
+                Climate & Price History
+              </Link>
+              : Historical data for informed decision-making.
+            </li>
+          </ul>
+        </section>
+        <section style={styles.cta}>
+          <h2>Get Started</h2>
+          <p>
+            Sign up now to access all features and improve your agricultural
+            practices.
+          </p>
+          <Link href="/auth/register">
+            <span style={styles.signupButton}>Sign Up</span>
+          </Link>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      <footer style={styles.footer}>
+        <p>&copy; 2024 Neuro Kode. All rights reserved.</p>
       </footer>
     </div>
   );
-}
+};
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column" as "column",
+    alignItems: "center",
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
+  },
+  header: {
+    textAlign: "center" as "center",
+    marginBottom: "20px",
+  },
+  mainContent: {
+    width: "100%",
+    maxWidth: "800px",
+  },
+  features: {
+    margin: "20px 0",
+  },
+  link: {
+    color: "#0070f3",
+    textDecoration: "none",
+  },
+  cta: {
+    marginTop: "40px",
+    padding: "20px",
+    backgroundColor: "#f8f9fa",
+    borderRadius: "8px",
+    textAlign: "center" as "center",
+  },
+  signupButton: {
+    padding: "10px 20px",
+    backgroundColor: "#0070f3",
+    color: "white",
+    textDecoration: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  footer: {
+    marginTop: "auto",
+    textAlign: "center" as "center",
+    padding: "20px 0",
+    borderTop: "1px solid #eaeaea",
+    width: "100%",
+  },
+};
+
+export default Home;
