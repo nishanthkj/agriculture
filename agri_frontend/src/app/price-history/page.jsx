@@ -1,7 +1,7 @@
 import React from "react";
 
 function page() {
-  return <div>page lorem-1000</div>;
+  return <div>page</div>;
 }
 
 export default page;
