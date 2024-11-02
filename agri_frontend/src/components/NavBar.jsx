@@ -109,7 +109,7 @@ const styles = {
   mainContent: {
     marginLeft: "250px", // Space for sidebar
     padding: "20px",
-    paddingTop: "80px", // Space for navbar
+    paddingTop: "40px", // Space for navbar
     transition: "margin-left 0.3s ease-in-out",
   },
   mainContentSidebarClosed: {
