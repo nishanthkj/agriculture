@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'pest_prediction',
     'real_time_monitoring',
     'managing',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
