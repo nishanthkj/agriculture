@@ -1,14 +1,25 @@
 "use client";
 import Image from "next/image";
-import IMG from "@/assets/famer.png";
+import IMG from "@/assets/famer.png"; // Ensure this path is correct
 
 export default function HeroPage() {
   return (
-    <section className="relative bg-green-50 h-[90vh] flex items-center">
-      {/* Container */}
-      <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center">
+    <section className="relative bg-green-50 h-[90vh] pt-16">
+      {/* Container with Grid Layout */}
+      <div className="container mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 items-center justify-center h-full">
+        {/* Image Section */}
+        <div className="flex justify-center mb-8 lg:mb-0">
+          <Image
+            src={IMG} // Ensure path is correct
+            alt="Agriculture Hero"
+            width={400}
+            height={400}
+            className="rounded-lg shadow-lg"
+          />
+        </div>
+
         {/* Text Section */}
-        <div className="lg:w-1/2 text-center lg:text-left">
+        <div className="text-center lg:text-left">
           <h1 className="text-4xl lg:text-6xl font-extrabold text-green-800 leading-tight">
             Unlock the Future of{" "}
             <span className="text-blue-600">Agriculture</span>
@@ -33,17 +44,6 @@ export default function HeroPage() {
               Learn More
             </a>
           </div>
-        </div>
-
-        {/* Image Section */}
-        <div className="lg:w-1/2 mt-8 lg:mt-0 flex justify-center">
-          <Image
-            src={IMG} // Correct path from the public directory
-            alt="Agriculture Hero"
-            width={400}
-            height={400}
-            className="rounded-lg shadow-lg"
-          />
         </div>
       </div>
 
