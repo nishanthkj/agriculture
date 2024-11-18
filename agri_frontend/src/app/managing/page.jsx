@@ -28,10 +28,11 @@ export default function ManagingPage() {
   const [workerRole, setWorkerRole] = useState("");
   const [workerFarm, setWorkerFarm] = useState("");
 
-  const [mapCenter, setMapCenter] = useState({
+  // Map center data, no setter function required if map center is static
+  const mapCenter = {
     lat: 37.7749, // Latitude of San Francisco (example)
     lng: -122.4194, // Longitude of San Francisco
-  });
+  };
 
   const addStock = () => {
     const newStock = {

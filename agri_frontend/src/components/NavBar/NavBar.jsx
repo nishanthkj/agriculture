@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link"; // Import Link from next/link
 import {
   FaBars,
   FaTimes,
@@ -36,52 +37,62 @@ export default function ResponsiveNavBar() {
         <ul className={`hidden md:flex space-x-6 text-black items-center`}>
           <li className="flex items-center">
             <FaHome className="mr-2" />
-            <a href="/" className="hover:text-blue-600">
+            <Link href="/" className="hover:text-blue-600">
+              {" "}
+              {/* Use Link */}
               Home
-            </a>
+            </Link>
           </li>
 
           <li className="flex items-center">
             <FaCogs className="mr-2" /> {/* Services Icon */}
-            <a href="/services" className="hover:text-blue-600">
+            <Link href="/services" className="hover:text-blue-600">
+              {" "}
+              {/* Use Link */}
               Services
-            </a>
+            </Link>
           </li>
 
           <li className="flex items-center">
             <FaUsers className="mr-2" />
-            <a href="/managing" className="hover:text-blue-600">
+            <Link href="/managing" className="hover:text-blue-600">
+              {" "}
+              {/* Use Link */}
               Managing
-            </a>
+            </Link>
           </li>
           <li className="flex items-center">
             <FaEnvelope className="mr-2" />
-            <a href="/contact" className="hover:text-blue-600">
+            <Link href="/contact" className="hover:text-blue-600">
+              {" "}
+              {/* Use Link */}
               Contact Us
-            </a>
+            </Link>
           </li>
           <li className="flex items-center">
             <FaInfoCircle className="mr-2" />
-            <a href="/about" className="hover:text-blue-600">
+            <Link href="/about" className="hover:text-blue-600">
+              {" "}
+              {/* Use Link */}
               About Us
-            </a>
+            </Link>
           </li>
         </ul>
 
         {/* Action Buttons */}
         <div className="hidden md:flex space-x-4">
-          <a
+          <Link
             href="#"
             className="px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-100 transition"
           >
             Login
-          </a>
-          <a
+          </Link>
+          <Link
             href="#"
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
           >
             Sign Up
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -91,51 +102,61 @@ export default function ResponsiveNavBar() {
           <ul className="space-y-4 py-4 px-6 text-black">
             <li className="flex items-center">
               <FaHome className="mr-2" />
-              <a href="/" className="hover:text-blue-600">
+              <Link href="/" className="hover:text-blue-600">
+                {" "}
+                {/* Use Link */}
                 Home
-              </a>
+              </Link>
             </li>
 
             <li className="flex items-center">
               <FaCogs className="mr-2" /> {/* Services Icon */}
-              <a href="/services" className="hover:text-blue-600">
+              <Link href="/services" className="hover:text-blue-600">
+                {" "}
+                {/* Use Link */}
                 Services
-              </a>
+              </Link>
             </li>
 
             <li className="flex items-center">
               <FaUsers className="mr-2" />
-              <a href="/managing" className="hover:text-blue-600">
+              <Link href="/managing" className="hover:text-blue-600">
+                {" "}
+                {/* Use Link */}
                 Managing
-              </a>
+              </Link>
             </li>
             <li className="flex items-center">
               <FaEnvelope className="mr-2" />
-              <a href="/contact" className="hover:text-blue-600">
+              <Link href="/contact" className="hover:text-blue-600">
+                {" "}
+                {/* Use Link */}
                 Contact Us
-              </a>
+              </Link>
             </li>
             <li className="flex items-center">
               <FaInfoCircle className="mr-2" />
-              <a href="/about" className="hover:text-blue-600">
+              <Link href="/about" className="hover:text-blue-600">
+                {" "}
+                {/* Use Link */}
                 About Us
-              </a>
+              </Link>
             </li>
 
             {/* Action Buttons */}
             <div className="space-y-4 mt-4">
-              <a
+              <Link
                 href="#"
                 className="block px-4 py-2 border border-blue-600 text-blue-600 rounded text-center hover:bg-blue-100 transition"
               >
                 Login
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="block px-4 py-2 bg-blue-600 text-white rounded text-center hover:bg-blue-700 transition"
               >
                 Sign Up
-              </a>
+              </Link>
             </div>
           </ul>
         </div>

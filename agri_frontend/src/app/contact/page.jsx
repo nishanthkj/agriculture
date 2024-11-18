@@ -108,11 +108,11 @@ export default function ContactPage() {
         {/* Right Section (Text) */}
         <div className="w-full text-center mt-8 lg:mt-12 lg:px-8">
           <h2 className="text-2xl font-semibold text-green-800 mb-4">
-            We’d Love to Hear From You!
+            We&apos;d Love to Hear From You! {/* Replace `'` with &apos; */}
           </h2>
           <p className="text-sm text-gray-700 mb-4">
             Whether you have questions, feedback, or want to collaborate with
-            us, don't hesitate to reach out. Your thoughts matter to us.
+            us, don&apos;t hesitate to reach out. Your thoughts matter to us.
           </p>
           <p className="text-sm text-gray-700 mb-6">
             Neuro Kodes is always looking for new ways to improve and connect

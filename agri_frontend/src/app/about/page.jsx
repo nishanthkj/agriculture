@@ -6,35 +6,35 @@ import Image from "next/image";
 import Madu from "@/assets/Madu.png";
 
 export default function AboutPage() {
-  // Static team data with GitHub links
-  const teamMembers = [
-    {
-      name: "Nishanth K J",
-      role: "Lead, Full Stack Developer & AI/ML Specialist",
-      github: "https://github.com/nishanthkj",
-    },
-    {
-      name: "Skanda P M",
-      role: "UI/UX & Graphic Designer",
-      github: "https://github.com/Sk2003pm",
-    },
-    {
-      name: "Likith D",
-      role: "UI/UX & Frontend Developer",
-      github: "https://github.com/likithsurya23",
-    },
-    {
-      name: "Harshavardhan T",
-      role: "Backend Developer & Domain Expertise in AI/ML",
-      github: "https://github.com/S-harshavardhana",
-    },
-  ];
-
   const [githubData, setGithubData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch GitHub profiles for all team members
   useEffect(() => {
+    // Static team data with GitHub links inside useEffect
+    const teamMembers = [
+      {
+        name: "Nishanth K J",
+        role: "Lead, Full Stack Developer & AI/ML Specialist",
+        github: "https://github.com/nishanthkj",
+      },
+      {
+        name: "Skanda P M",
+        role: "UI/UX & Graphic Designer",
+        github: "https://github.com/Sk2003pm",
+      },
+      {
+        name: "Likith D",
+        role: "UI/UX & Frontend Developer",
+        github: "https://github.com/likithsurya23",
+      },
+      {
+        name: "Harshavardhan T",
+        role: "Backend Developer & Domain Expertise in AI/ML",
+        github: "https://github.com/S-harshavardhana",
+      },
+    ];
+
     const fetchGithubProfiles = async () => {
       const data = await Promise.all(
         teamMembers.map(async (member) => {
@@ -57,7 +57,7 @@ export default function AboutPage() {
     };
 
     fetchGithubProfiles();
-  }, []);
+  }, []); // Empty dependency array ensures this effect runs only once
 
   return (
     <section className="relative bg-gray-50 py-12">
@@ -109,7 +109,12 @@ export default function AboutPage() {
           </h2>
 
           {loading ? (
-            <p className="text-center text-gray-600">Loading team members...</p>
+            <div className="text-center">
+              <div className="loader"></div> {/* Loader */}
+              <p className="text-center text-gray-600">
+                Loading team members...
+              </p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* Team Guide Card First */}
@@ -125,7 +130,8 @@ export default function AboutPage() {
                   Dr. Madu CS
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Dr. Madu CS is our esteemed team guide and a researcher.
+                  Dr. Madu CS is our esteemed team guide and a researcher&apos;s
+                  mentor.
                 </p>
               </div>
 
@@ -135,10 +141,12 @@ export default function AboutPage() {
                   key={index}
                   className="bg-white p-6 shadow-lg rounded-lg text-center transition-transform transform hover:scale-105"
                 >
-                  <img
+                  <Image
                     src={member.avatarUrl}
                     alt={member.name}
                     className="w-24 h-24 rounded-full mx-auto mb-4"
+                    width={96}
+                    height={96}
                   />
                   <div className="font-semibold text-lg text-gray-800 mb-2">
                     {member.name}
@@ -169,7 +177,7 @@ export default function AboutPage() {
             Join Us on Our Journey
           </h3>
           <p className="text-gray-600">
-            We believe in collaboration and innovation. If you're passionate
+            We believe in collaboration and innovation. If you&apos;re passionate
             about transforming agriculture with technology, we would love to
             have you on our team. Get in touch to learn more about how you can
             be a part of our mission.
