@@ -127,10 +127,10 @@ export default function AboutPage() {
                   height={96}
                 />
                 <h3 className="text-xl font-bold text-gray-800 mb-4">
-                  Dr. Madu CS
+                  Dr. Madhu CS
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Dr. Madu CS is our esteemed team guide and a researcher&apos;s
+                  Dr. Madhu CS is our esteemed team guide and a researcher&apos;s
                   mentor.
                 </p>
               </div>
