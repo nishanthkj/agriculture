@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,31 +6,63 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  FARMER
+  WORKER
+  ADMIN
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
   phone     String?
   avatar    Bytes?
-  role      String?
-  createdAt DateTime @default(now())
+  role      Role       @default(FARMER)
+  createdAt DateTime   @default(now())
+
+  soildata  SoilData[]
+  stocks    Stock[]
+  workers   Worker[]
 }
 
+model Stock {
+  id        String   @id @default(uuid())
+  name      String
+  quantity  Int
+  location  String
+  cost      Float    // 💰 Added field
+  userId    String
+  createdAt DateTime @default(now())
+  sellingPrice Float
+  user User @relation(fields: [userId], references: [id])
+}
 
+model Worker {
+  id        String   @id @default(uuid())
+  name      String
+  role      String
+  farm      String
+  cost      Float    // 💰 Added field
+  userId    String
+  createdAt DateTime @default(now())
 
+  user User @relation(fields: [userId], references: [id])
+}
 
 model SoilData {
-  id           String   @id @default(uuid())
-  userId       String
-  nitrogen     Float
-  phosphorous  Float
-  potassium    Float
-  ph           Float
-  rainfall     Float
-  state        String
-  city         String
-  createdAt    DateTime @default(now())
+  id          String   @id @default(uuid())
+  userId      String
+  nitrogen    Float
+  phosphorous Float
+  potassium   Float
+  ph          Float
+  rainfall    Float
+  state       String
+  city        String
+  createdAt   DateTime @default(now())
 
-
+  user User @relation(fields: [userId], references: [id])
 }
