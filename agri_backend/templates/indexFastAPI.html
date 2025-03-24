@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crop Yield Predictor</title>
+  <style>
+    body { font-family: Arial; padding: 30px; max-width: 600px; margin: auto; }
+    select, input, button { width: 100%; padding: 10px; margin: 10px 0; }
+    .result { font-weight: bold; color: green; }
+    .error { font-weight: bold; color: red; }
+  </style>
+</head>
+<body>
+  <h2>🌾 DRQN Crop Yield Prediction</h2>
+  <form action="/predict" method="post">
+    <label>Crop:</label>
+    <select name="crop">
+      {% for item in crops %}
+        <option value="{{ item }}">{{ item }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Season:</label>
+    <select name="season">
+      {% for item in seasons %}
+        <option value="{{ item }}">{{ item }}</option>
+      {% endfor %}
+    </select>
+
+    <label>State:</label>
+    <select name="state">
+      {% for item in states %}
+        <option value="{{ item }}">{{ item }}</option>
+      {% endfor %}
+    </select>
+
+    <label>Area (hectares):</label>
+    <input type="number" step="any" name="area" required>
+
+    <label>Annual Rainfall (mm):</label>
+    <input type="number" step="any" name="rainfall" required>
+
+    <label>Fertilizer Used (kg):</label>
+    <input type="number" step="any" name="fertilizer" required>
+
+    <label>Pesticide Used (kg):</label>
+    <input type="number" step="any" name="pesticide" required>
+
+    <button type="submit">Predict Yield</button>
+  </form>
+
+  {% if predicted_yield %}
+    <p class="result">✅ Predicted Yield: {{ predicted_yield }} tons/hectare</p>
+  {% endif %}
+
+  {% if error %}
+    <p class="error">❌ Error: {{ error }}</p>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Crop Yield Prediction</title>
+</head>
+<body>
+  <h1>Crop Yield Prediction</h1>
+  <form action="/" method="post" onsubmit="submitForm(event)">
+    <label>Crop:</label>
+    <select id="crop">
+      {% for c in crops %}
+        <option value="{{ c }}">{{ c }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Season:</label>
+    <select id="season">
+      {% for s in seasons %}
+        <option value="{{ s }}">{{ s }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>State:</label>
+    <select id="state">
+      {% for st in states %}
+        <option value="{{ st }}">{{ st }}</option>
+      {% endfor %}
+    </select><br><br>
+
+    <label>Area:</label>
+    <input type="number" id="area" step="0.01"><br><br>
+
+    <label>Rainfall:</label>
+    <input type="number" id="rainfall" step="0.01"><br><br>
+
+    <label>Fertilizer:</label>
+    <input type="number" id="fertilizer" step="0.01"><br><br>
+
+    <label>Pesticide:</label>
+    <input type="number" id="pesticide" step="0.01"><br><br>
+
+    <button type="submit">Predict</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    async function submitForm(event) {
+      event.preventDefault();
+      const res = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          crop: document.getElementById('crop').value,
+          season: document.getElementById('season').value,
+          state: document.getElementById('state').value,
+          area: parseFloat(document.getElementById('area').value),
+          rainfall: parseFloat(document.getElementById('rainfall').value),
+          fertilizer: parseFloat(document.getElementById('fertilizer').value),
+          pesticide: parseFloat(document.getElementById('pesticide').value),
+        })
+      });
+      const data = await res.json();
+      document.getElementById('result').innerText = data.predicted_yield
+        ? `🌾 Predicted Yield: ${data.predicted_yield}`
+        : `❌ Error: ${data.error}`;
+    }
+  </script>
+</body>
+</html>

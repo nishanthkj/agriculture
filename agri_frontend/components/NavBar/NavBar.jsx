@@ -89,6 +89,18 @@ export default function ResponsiveNavBar() {
                   <div className="text-gray-500 text-xs">{user.email}</div>
                 </div>
                 <hr />
+                <div
+                  className="cursor-pointer text-sm text-center hover:bg-muted rounded p-2"
+                  onClick={() => router.push('/profile')}
+                >
+                  Profile
+                </div>
+                <div
+                  className="cursor-pointer text-sm text-center hover:bg-muted rounded p-2"
+                  onClick={() => router.push('/dashboard')}
+                >
+                  Dashboard
+                </div>
                 <Button
                   variant="ghost"
                   className="w-full justify-center text-sm text-red-500"
@@ -135,6 +147,28 @@ export default function ResponsiveNavBar() {
               >
                 <div className="font-semibold">{user.name}</div>
                 <div className="text-xs text-gray-500">{user.email}</div>
+              </div>
+            )}
+            {user && (
+              <div
+                className="mb-4 border-b border-gray-300 pb-3 px-4 py-2 text-center rounded-md cursor-pointer transition-colors hover:bg-grey-400 hover:text-green-800"
+                onClick={() => {
+                  setIsMenuOpen(false)
+                  router.push('/profile')
+                }}
+              >
+                Profile
+              </div>
+            )}
+            {user && (
+              <div
+                className="mb-4 border-b border-gray-300 pb-3 px-4 py-2 text-center rounded-md cursor-pointer transition-colors hover:bg-grey-400 hover:text-green-800"
+                onClick={() => {
+                  setIsMenuOpen(false)
+                  router.push('/dashboard')
+                }}
+              >
+                Dashboard
               </div>
             )}
             <div className="flex flex-col items-center justify-center space-y-4">
