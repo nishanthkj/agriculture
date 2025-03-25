@@ -1,0 +1,52 @@
+name: agri
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.12
+  - pip
+  - numpy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - sqlalchemy
+  - sqlite
+  - jupyter
+  - ipykernel
+  - django
+  - djangorestframework
+
+  - pip:
+      - flask
+      - flask-bcrypt
+      - flask-cors
+      - flask-login
+      - flask-sqlalchemy
+      - flask-wtf
+      - tensorflow==2.19.0
+      - keras==3.9.0
+      - h5py
+      - protobuf
+      - shap
+      - fastapi
+      - uvicorn
+      - python-dotenv
+      - joblib
+      - pillow
+      - kaggle
+      - kagglehub
+      - torch
+      - torchvision
+      - markdown
+      - rich
+      - scipy
+      - sqlparse
+      - wtforms
+      - python-multipart
+      - pydantic
+      - absl-py
+      - grpcio
+      - sympy
+      - tqdm

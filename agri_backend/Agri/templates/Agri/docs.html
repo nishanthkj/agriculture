@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>📘 Agri API Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1, h2 {
+            color: #2f855a;
+        }
+
+        code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 90%;
+        }
+
+        pre {
+            background: #edf2f7;
+            padding: 10px;
+            border-left: 4px solid #38a169;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .tag {
+            background-color: #e6fffa;
+            color: #319795;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 90%;
+        }
+    </style>
+</head>
+<body>
+    <h1>📘 Agri API Documentation</h1>
+    <p>This is the official API documentation for the Agri Crop Yield Prediction System.</p>
+
+    <h2>🏠 Homepage</h2>
+    <ul>
+        <li><strong>URL:</strong> <code>/</code></li>
+        <li><strong>Method:</strong> <code>GET</code></li>
+        <li><strong>Description:</strong> Renders the homepage of the Agri app.</li>
+    </ul>
+
+    <h2>🔌 API Endpoint - Crop Yield</h2>
+    <ul>
+        <li><strong>URL:</strong> <code>/api/</code></li>
+        <li><strong>Method:</strong> <code>GET</code></li>
+        <li><strong>Description:</strong> Returns a welcome JSON message.</li>
+    </ul>
+
+    <h3>✅ Sample Response</h3>
+    <pre>{
+  "message": "Welcome to Agri API 🌾"
+}</pre>
+
+    <h2>📦 How to Use</h2>
+    <ol>
+        <li>Start the development server:
+            <pre>python manage.py runserver</pre>
+        </li>
+        <li>Open your browser and navigate to:
+            <ul>
+                <li><code>http://127.0.0.1:8000/</code> → Homepage</li>
+                <li><code>http://127.0.0.1:8000/api/</code> → API JSON</li>
+                <li><code>http://127.0.0.1:8000/docs/</code> → API Docs</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>🛠️ Tech Stack</h2>
+    <table>
+        <tr><th>Component</th><th>Technology</th></tr>
+        <tr><td>Backend</td><td>Django (Python)</td></tr>
+        <tr><td>API Framework</td><td>Django REST Framework</td></tr>
+        <tr><td>Frontend</td><td>HTML (Jinja2)</td></tr>
+        <tr><td>Database</td><td>SQLite (default)</td></tr>
+    </table>
+</body>
+</html>

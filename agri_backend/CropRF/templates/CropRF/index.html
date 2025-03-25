@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop & Fertilizer Prediction</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'CropRF/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Crop & Fertilizer Recommendation</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+            <label>Nitrogen (N):</label>
+            <input type="text" name="N" required>
+
+            <label>Phosphorus (P):</label>
+            <input type="text" name="P" required>
+
+            <label>Potassium (K):</label>
+            <input type="text" name="K" required>
+
+            <label>Temperature:</label>
+            <input type="text" name="temperature" required>
+
+            <label>Humidity:</label>
+            <input type="text" name="humidity" required>
+
+            <label>pH:</label>
+            <input type="text" name="ph" required>
+
+            <label>Rainfall:</label>
+            <input type="text" name="rainfall" required>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if crop_prediction or fertilizer_prediction %}
+        <div class="output-box">
+            {% if crop_prediction %}
+                <p><strong>Predicted Crop:</strong> {{ crop_prediction }}</p>
+            {% endif %}
+            {% if fertilizer_prediction %}
+                <p><strong>Recommended Fertilizer:</strong> {{ fertilizer_prediction }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if error %}
+            <p style="color:red; margin-top: 10px;">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
