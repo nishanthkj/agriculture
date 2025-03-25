@@ -242,7 +242,7 @@ export default function DashboardPage() {
                         <button
                             className="text-blue-600 hover:underline text-sm"
                             onClick={() => setShowAllPrices(prev => !prev)}
-                        >
+                        > 
                             {showAllPrices ? 'Show Less' : 'Show More'}
                         </button>
                     </div>

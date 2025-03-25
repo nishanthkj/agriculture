@@ -32,7 +32,7 @@ export default function HeroPage() {
           {/* Call-to-Action Buttons */}
           <div className="mt-6 flex justify-center lg:justify-start space-x-4">
             <a
-              href="#services"
+              href="/services"
               className="px-6 py-3 bg-blue-600 text-white text-lg font-medium rounded hover:bg-blue-700 transition"
             >
               Get Started

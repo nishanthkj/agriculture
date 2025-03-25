@@ -24,7 +24,7 @@ urlpatterns = [
     path('api/', include('Agri.api.urls')),
     path('cropyield/', include('CropYield.urls')),
     path('api/', include('CropYield.api.urls')),
-    path('cropfertilizer/', include('CropRF.urls')),
+    path('croprf/', include('CropRF.urls')),
     path('api/', include('CropRF.api.urls')), 
     path('api/', include('SoilFertility.api.urls')),
     path('soil/', include('SoilFertility.urls')),

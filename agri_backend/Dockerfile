@@ -1,18 +1,30 @@
-# Use lightweight Conda base
-FROM continuumio/miniconda3
+# Use a lightweight Python base image with Python 3.12
+FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy environment.yml and install dependencies
-COPY environment.yml .
-RUN conda env create -f environment.yml
+# Copy requirements.txt to the container
+COPY requirements.txt .
 
-# Make sure conda env is always activated
-SHELL ["conda", "run", "-n", "agri", "/bin/bash", "-c"]
+# Upgrade pip to the latest version
+RUN pip install --upgrade pip
 
-# Copy app code
+# Remove pywin32 from requirements.txt if it exists (Python-based approach)
+
+
+# Install dependencies
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire app code into the container
 COPY . .
 
-# Expose Django/Flask port
+
+# Collect static files (optional)
+RUN python manage.py collectstatic --noinput
+
+# Expose the port that Django (or Flask) will run on
 EXPOSE 8000
+
+# Command to run the Django server (or Flask)
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
