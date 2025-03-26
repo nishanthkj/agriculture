@@ -21,7 +21,7 @@ COPY . .
 
 
 # Collect static files (optional)
-RUN python manage.py collectstatic --noinput
+#RUN python manage.py collectstatic --noinput
 
 # Expose the port that Django (or Flask) will run on
 EXPOSE 8000
