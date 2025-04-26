@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { FaGithub, FaBullseye, FaRocket } from "react-icons/fa";
 import Image from "next/image";
 import Shivamurthy from "@/assets/Shivamurthy.png";
-
+import Guide from "@/assets/Akshatha M.png";
 export default function AboutPage() {
   const [githubData, setGithubData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ export default function AboutPage() {
       },
       {
         name: "Skanda P M",
-        role: "UI/UX & Graphic Designer",
+        role: "UI/UX, & Graphic Designer",
         github: "https://github.com/Sk2003pm",
       },
       {
@@ -131,6 +131,22 @@ export default function AboutPage() {
                 </h3>
                 <p className="text-gray-600 mb-4">
                   Dr.Shivamurthy R.C is our esteemed team guide and a researcher&apos;s
+                  mentor.
+                </p>
+              </div>
+              <div className="bg-white p-6 shadow-lg rounded-lg text-center transition-transform transform hover:scale-105">
+                <Image
+                  src={Guide}
+                  alt="Dr. Shivamurthy RC"
+                  className="w-24 h-24 rounded-full mx-auto mb-4"
+                  width={96}
+                  height={96}
+                />
+                <h3 className="text-xl font-bold text-gray-800 mb-4">
+                  Akshatha M
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Prof. Akshatha M is our esteemed team co guide and a researcher&apos;s
                   mentor.
                 </p>
               </div>

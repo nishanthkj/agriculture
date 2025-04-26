@@ -4,3 +4,5 @@ from rest_framework.response import Response
 class AgriAPIHome(APIView):
     def get(self, request):
         return Response({"message": "Welcome to Agri API 🌱"})
+
+

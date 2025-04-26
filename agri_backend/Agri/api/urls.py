@@ -17,8 +17,8 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from .import views as v
+from .import views 
 urlpatterns = [
 
-    path('api/agri/', v.AgriAPIHome.as_view(), name="agri_api"),       
+    path('api/agri/', views.AgriAPIHome.as_view(), name="agri_api"),       
 ]
