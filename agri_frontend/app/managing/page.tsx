@@ -226,7 +226,7 @@ export default function ManagingPage() {
   const totalWorkerPages = Math.ceil(filteredWorkers.length / ITEMS_PER_PAGE);
   //if (isAuthenticated === null) return <p className="text-center mt-10">Checking authentication...</p>;
 
-  return isAuthenticated === null ? (<div> Login </div>
+  return isAuthenticated === null ? (<div>  </div>
   ) : isAuthenticated === false ? (<LoginRequired />) :  (
 
     <div className="max-w-7xl mx-auto px-4 py-12 space-y-12">
