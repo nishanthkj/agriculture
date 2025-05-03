@@ -1,7 +1,7 @@
 'use client';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
 //import { cookies } from 'next/headers';
-
+import LoginRequired from '@/components/LoginRequired/LoginRequired';
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import {
   PaginationNext, PaginationLink,
 } from "@/components/ui/pagination";
 import toast from 'react-hot-toast';
+//import { set } from 'date-fns';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -51,7 +52,7 @@ export default function ManagingPage() {
   const filteredStocks = Array.isArray(stocks) ? stocks.filter(stock =>
     stock.name.toLowerCase().includes(searchStock.toLowerCase())
   ) : [];
-  
+
 
   const filteredWorkers = Array.isArray(workers) ? workers.filter(worker =>
     worker.name.toLowerCase().includes(searchWorker.toLowerCase())
@@ -61,28 +62,43 @@ export default function ManagingPage() {
   const totalStockProfit = filteredStocks.reduce((sum, stock) => sum + (stock.sellingPrice - stock.cost) * stock.quantity, 0);
   const totalWorkerCost = filteredWorkers.reduce((sum, worker) => sum + worker.cost, 0);
 
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
 
-  const router = useRouter();
+  //const router = useRouter();
   useEffect(() => {
-    const token = getCookie('token');
-    if (!token) {
-      router.push('/login');
-    } else {
-      fetchData();
-    }
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/profile', {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        if (res.ok) {
+          setIsAuthenticated(true);
+          fetchData();
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error("Auth check failed", error);
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
 
   // Helper function to get the cookie by name asynchronously
-  const getCookie = async (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-      return parts.pop()?.split(';').shift() ?? null;
-    }
-    return null;
-  };
+  // const getCookie = async (name: string) => {
+  //   const value = `; ${document.cookie}`;
+  //   const parts = value.split(`; ${name}=`);
+  //   if (parts.length === 2) {
+  //     return parts.pop()?.split(';').shift() ?? null;
+  //   }
+  //   return null;
+  // };
   const fetchData = async () => {
     const stockRes = await fetch('/api/stocks');
     const workerRes = await fetch('/api/workers');
@@ -94,6 +110,11 @@ export default function ManagingPage() {
     setWorkers(workerData);
   };
 
+  // if (isAuthenticated === false) {
+  //   router.push('/login');
+  //   return null;
+  // }
+  // Redirect after 1 second if not authenticated
   const addStock = async () => {
     const { name, quantity, location, cost, sellingPrice } = stockForm;
     if (!name || !quantity || !location || !cost || !sellingPrice) {
@@ -203,8 +224,11 @@ export default function ManagingPage() {
 
   const totalStockPages = Math.ceil(filteredStocks.length / ITEMS_PER_PAGE);
   const totalWorkerPages = Math.ceil(filteredWorkers.length / ITEMS_PER_PAGE);
+  //if (isAuthenticated === null) return <p className="text-center mt-10">Checking authentication...</p>;
 
-  return (
+  return isAuthenticated === null ? (<div> Login </div>
+  ) : isAuthenticated === false ? (<LoginRequired />) :  (
+
     <div className="max-w-7xl mx-auto px-4 py-12 space-y-12">
       {/* STOCKS */}
       <Card className="p-6 space-y-4">
@@ -406,5 +430,5 @@ export default function ManagingPage() {
         </Pagination>
       </Card>
     </div>
-  );
+  ) ;
 }
