@@ -28,4 +28,6 @@ urlpatterns = [
     path('api/', include('CropRF.api.urls')), 
     path('api/', include('SoilFertility.api.urls')),
     path('soil/', include('SoilFertility.urls')),
-]
+    path('api-auth/', include('rest_framework.urls'))
+] 
+

@@ -149,37 +149,39 @@ export default function ServicesPage() {
             </div>
           </div></div>
 
-        </div>
+        </div >
         {/* Services Section */}
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8 mt-16">
           🌿 Our Smart Farming Services
         </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {
-              name: "🌾 Crop Prediction",
-              description: "Get precise predictions for crop yields and growth.",
-              href: "/services/crop-prediction",
-            },
-            {
-              name: "🐛 Pest Prediction",
-              description: "Identify and manage potential pest infestations.",
-              href: "/services/pest-prediction",
-            },
-            {
-              name: "🧪 Soil Health",
-              description: "Monitor and improve soil health for sustainable farming.",
-              href: "/services/soil-health",
-            },
-          ].map((service, index) => (
-            <div key={index} className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">{service.name}</h2>
-              <p className="text-gray-600 mb-4">{service.description}</p>
-              <a href={service.href} className="text-blue-600 hover:underline">
-                Learn More →
-              </a>
-            </div>
-          ))}
+        <div className="w-full flex justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 text-center items-center justify-center">
+            {[
+              {
+                name: "🌾 Crop Prediction",
+                description: "Get precise predictions for crop yields and growth.",
+                href: "/services/crop-prediction",
+              },
+              // {
+              //   name: "🐛 Pest Prediction",
+              //   description: "Identify and manage potential pest infestations.",
+              //   href: "/services/pest-prediction",
+              // },
+              {
+                name: "🧪 Soil Health",
+                description: "Monitor and improve soil health for sustainable farming.",
+                href: "/services/soil-health",
+              },
+            ].map((service, index) => (
+              <div key={index} className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition ">
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">{service.name}</h2>
+                <p className="text-gray-600 mb-4">{service.description}</p>
+                <a href={service.href} className="text-blue-600 hover:underline">
+                  Learn More →
+                </a>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -53,6 +53,7 @@ export default function LoginPage() {
 
     toast.success('Login successful')
     router.push('/profile')
+    window.location.reload() 
   }
 
   return (
