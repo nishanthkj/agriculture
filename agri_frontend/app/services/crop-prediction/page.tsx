@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+//import { console } from 'inspector';
 
 interface SoilData {
   N: number;
@@ -17,6 +18,12 @@ interface SoilData {
   Cu: number;
   Mn: number;
   B: number;
+}
+interface PredictionResponse {
+  yield_per_hectare?: string;
+  total_yield?: string;
+  profitability?: string;
+  techniques?: string;
 }
 
 interface PredictionResponse {
@@ -77,10 +84,18 @@ export default function CropPredictionPage() {
         headers: { 'Content-Type': 'application/json' },
         body: raw,
       });
+      console.log('Request body:', raw);
+      console.log('Request headers:', {
+        'Content-Type': 'application/json',
+      });
+      console.log("Response", response);
+      console.log('Response status:', response.status);
 
       const responseText = await response.text();
+
       try {
         const parsed: PredictionResponse = JSON.parse(responseText);
+
         setResult(parsed);
         toast.success('✅ Prediction successful');
       } catch {
@@ -194,12 +209,36 @@ export default function CropPredictionPage() {
         </div>
       )}
 
-      {result?.response && (
-        <div className="p-6 bg-green-50 border rounded-lg text-sm mt-6 space-y-4">
-          <h2 className="text-xl font-semibold">📈 AI Prediction Result</h2>
-          <pre className="whitespace-pre-line text-justify">{result.response}</pre>
+
+      {/* {result && (
+        <div className="mt-8 p-4 border rounded bg-green-50 shadow-sm">
+          <h2 className="text-xl font-bold mb-3">🌱 Prediction Result</h2>
+          <ul className="space-y-2 text-sm">
+            {result.yield_per_hectare && (
+              <li><strong>Yield per Hectare:</strong> {result.yield_per_hectare}</li>
+            )}
+            {result.total_yield && (
+              <li><strong>Total Yield:</strong> {result.total_yield}</li>
+            )}
+            {result.profitability && (
+              <li><strong>Profitability:</strong> {result.profitability}</li>
+            )}
+            {result.techniques && (
+              <li><strong>Recommended Techniques:</strong> {result.techniques}</li>
+            )}
+          </ul>
         </div>
-      )}
+      )} */}
+    {result?.response && (
+  <div className="mt-6 p-4 bg-yellow-100 border rounded text-sm whitespace-pre-wrap">
+    <strong>🌾 AI Full Response:</strong>
+    <pre className="mt-2 font-mono">{result.response}</pre>
+  </div>
+)}
+
+
+
+
     </div>
   );
 }
