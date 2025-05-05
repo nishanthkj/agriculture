@@ -24,9 +24,12 @@ SECRET_KEY = "django-insecure-*wve0u&s(j(z!h)&p&*k1#tlh-&fj#6q!87q88(9at84vwdc%_
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React/Next.js dev server
+]
 
 
 # Application definition
@@ -41,12 +44,17 @@ INSTALLED_APPS = [
     "Agri",
     "CropYield",
     'rest_framework',
-  'CropRF',
-   "SoilFertility",
+    'CropRF',
+    "SoilFertility",
+    'corsheaders',
+     'predictor',
+
 
 ]
 
 MIDDLEWARE = [
+        'corsheaders.middleware.CorsMiddleware',  # must be near the top
+
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -57,6 +65,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "agri_backend.urls"
+
+
 
 TEMPLATES = [
     {

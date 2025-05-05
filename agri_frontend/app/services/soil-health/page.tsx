@@ -1,176 +1,131 @@
-'use client'
+// FRONTEND: app/services/soil-health/page.tsx
+'use client';
 
-import React, { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select'
+import React, { useEffect, useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
-// State → City mapping
-const statesWithCities: { [state: string]: string[] } = {
-  "Andhra Pradesh": ["Vijayawada", "Visakhapatnam", "Guntur", "Nellore"],
-  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat"],
-  "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat"],
-  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur"],
-  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba"],
-  "Goa": ["Panaji", "Vasco da Gama", "Margao", "Mapusa"],
-  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot"],
-  "Haryana": ["Gurgaon", "Faridabad", "Panipat", "Ambala"],
-  "Himachal Pradesh": ["Shimla", "Manali", "Solan", "Dharamshala"],
-  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro"],
-  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore"],
-  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur"],
-  "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior"],
-  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik"],
-  "Manipur": ["Imphal", "Thoubal", "Bishnupur"],
-  "Meghalaya": ["Shillong", "Tura", "Jowai"],
-  "Mizoram": ["Aizawl", "Lunglei", "Champhai"],
-  "Nagaland": ["Kohima", "Dimapur", "Mokokchung"],
-  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Puri"],
-  "Punjab": ["Amritsar", "Ludhiana", "Jalandhar", "Patiala"],
-  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota"],
-  "Sikkim": ["Gangtok", "Namchi", "Gyalshing"],
-  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Salem"],
-  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Khammam"],
-  "Tripura": ["Agartala", "Dharmanagar", "Udaipur"],
-  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Noida", "Agra"],
-  "Uttarakhand": ["Dehradun", "Haridwar", "Nainital", "Haldwani"],
-  "West Bengal": ["Kolkata", "Howrah", "Asansol", "Durgapur"]
-}
+const requiredFields = [
+  'N', 'P', 'K', 'pH', 'EC', 'OC', 'S', 'Zn', 'Fe', 'Cu', 'Mn', 'B'
+];
 
-export default function SoilForm() {
-  const [formData, setFormData] = useState({
-    nitrogen: '',
-    phosphorous: '',
-    potassium: '',
-    ph: '',
-    rainfall: '',
-    state: '',
-    city: ''
-  })
+type SoilFormType = Record<typeof requiredFields[number] | 'fertilityClass' | 'confidence', string>;
 
-  const handleChange = (key: string, value: string) => {
-    setFormData(prev => ({ ...prev, [key]: value }))
-  }
+export default function SoilHealthPage() {
+  const [formData, setFormData] = useState<Partial<SoilFormType>>({});
+  const [loading, setLoading] = useState(false);
+  const [isExisting, setIsExisting] = useState(false);
+
+  useEffect(() => {
+    const fetchExisting = async () => {
+      try {
+        const res = await fetch('/api/soil', { credentials: 'include' });
+        const result = await res.json();
+        if (result.success && result.data) {
+          setFormData(result.data);
+          setIsExisting(true);
+        }
+      } catch (err) {
+        console.error('Failed to load existing soil data:', err);
+      }
+    };
+    fetchExisting();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async () => {
-    console.log('Submitted:', formData)
-    const payload = {
-      ...formData,
-      userId: 'replace-with-auth-user-id' // Replace this dynamically later
+    console.log("🔄 Submitting form...");
+    const missingFields = requiredFields.filter(
+      (key) => !formData[key] || isNaN(parseFloat(formData[key]!))
+    );
+    if (missingFields.length > 0) {
+      toast.error(`Please fill all fields: ${missingFields.join(', ')}`);
+      return;
     }
 
-    const res = await fetch('/api/soil', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
+    setLoading(true);
+    try {
+      console.log("📡 Sending prediction request to Django...");
+      const predictionRes = await fetch('http://localhost:8000/api/soil/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(
+          Object.fromEntries(requiredFields.map(key => [key, parseFloat(formData[key]!)])
+          ))
+      });
+      const prediction = await predictionRes.json();
+      console.log("✅ Prediction result:", prediction);
 
-    const result = await res.json()
-    console.log(result)
-    // Call your API here
-  }
+      setFormData((prev) => ({
+        ...prev,
+        fertilityClass: prediction.fertility_class,
+        confidence: prediction.confidence.toString(),
+      }));
+
+      console.log("📦 Saving to DB...");
+      const dbRes = await fetch('/api/soil', {
+        method: isExisting ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...Object.fromEntries(requiredFields.map(k => [k, parseFloat(formData[k]!)])),
+          fertilityClass: prediction.fertility_class,
+          confidence: prediction.confidence,
+        })
+      });
+      const dbResult = await dbRes.json();
+      console.log("✅ DB result:", dbResult);
+
+      if (dbRes.ok) {
+        toast.success('✅ Data saved successfully');
+        setIsExisting(true);
+      } else {
+        toast.error('❌ Failed to store data');
+        console.error(dbResult);
+      }
+    } catch (err) {
+      toast.error('❌ Server error');
+      console.error("🔥 Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
-    <div className="max-w-md mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Soil & Weather Form</h1>
+    <div className="max-w-xl mx-auto px-6 py-10">
+      <h1 className="text-3xl font-bold mb-6">🧪 Soil Fertility Form</h1>
+      {formData.fertilityClass && (
+        <div className="mt-6 text-lg text-green-700 font-medium">
+          🌾 Fertility Class: <strong>{formData.fertilityClass}</strong><br />
+          🎯 Confidence: <strong>{formData.confidence}</strong>
+        </div>
+      )}
+      {requiredFields.map((key) => (
+        <div key={key} className="mb-4">
+          <Label htmlFor={key}>{key}</Label>
+          <Input
+            id={key}
+            name={key}
+            type="number"
+            step="0.01"
+            placeholder={`Enter ${key}`}
+            value={formData[key] || ''}
+            onChange={handleChange}
+          />
+        </div>
+      ))}
 
-      <div>
-        <Label>Nitrogen</Label>
-        <Input
-          type="number"
-          placeholder="Enter Nitrogen"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('nitrogen', e.target.value)}
-        />
-      </div>
 
-      <div>
-        <Label>Phosphorous</Label>
-        <Input
-          type="number"
-          placeholder="Enter Phosphorous"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('phosphorous', e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Label>Potassium</Label>
-        <Input
-          type="number"
-          placeholder="Enter Potassium"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('potassium', e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Label>pH</Label>
-        <Input
-          type="number"
-          placeholder="Enter pH"
-          step="0.1"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('ph', e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Label>Rainfall</Label>
-        <Input
-          type="number"
-          placeholder="Enter Rainfall"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('rainfall', e.target.value)}
-        />
-      </div>
-
-      <div>
-        <Label>State</Label>
-        <Select onValueChange={(value: string) => {
-          handleChange('state', value)
-          handleChange('city', '') // reset city when state changes
-        }}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select State" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(statesWithCities).map(state => (
-              <SelectItem key={state} value={state}>
-                {state}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label>City</Label>
-        <Select
-          disabled={!formData.state}
-          onValueChange={(value: string) => handleChange('city', value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={formData.state ? "Select City" : "Select State first"} />
-          </SelectTrigger>
-          <SelectContent>
-            {formData.state &&
-              statesWithCities[formData.state].map(city => (
-                <SelectItem key={city} value={city}>
-                  {city}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <Button className="w-full mt-4" onClick={handleSubmit}>
-        Submit
+      <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4">
+        {loading ? 'Processing...' : isExisting ? 'Update Record' : 'Submit'}
       </Button>
     </div>
-  )
+  );
 }
