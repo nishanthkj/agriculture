@@ -4,7 +4,6 @@ import prisma from '@/lib/prisma'; // Prisma client
 
 export async function GET(req: NextRequest) {
     const token = req.cookies.get('token')?.value; // Get token from cookies
-
     if (!token) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

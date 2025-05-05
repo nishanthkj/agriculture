@@ -1,22 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LoginRequired from "@/components/LoginRequired/LoginRequired";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+//import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
 
 interface WeatherData {
-  location: {
-    name: string;
-    region: string;
-  };
-  current: {
-    temp_c: number;
-    condition: {
-      text: string;
-    };
-    time: string;
-  };
+  location: { name: string; region: string };
+  current: { temp_c: number; condition: { text: string }; time: string };
 }
 
 interface MarketPriceEntry {
@@ -29,12 +22,28 @@ interface MarketPriceEntry {
 }
 
 export default function ServicesPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [marketPrices, setMarketPrices] = useState<MarketPriceEntry[]>([]);
+  const [showAllPrices, setShowAllPrices] = useState(false);
 
   useEffect(() => {
-    fetchClimate();
-    fetchPrices();
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/profile", { method: "GET", credentials: "include" });
+        if (res.ok) {
+          setIsAuthenticated(true);
+          fetchClimate();
+          fetchPrices();
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        console.error("Authentication failed", err);
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
   }, []);
 
   const fetchClimate = async () => {
@@ -47,15 +56,10 @@ export default function ServicesPage() {
           const data = await res.json();
           const time = data.current_weather.time;
           setWeather({
-            location: {
-              name: `Lat: ${lat.toFixed(2)}`,
-              region: `Lon: ${lon.toFixed(2)}`,
-            },
+            location: { name: `Lat: ${lat.toFixed(2)}`, region: `Lon: ${lon.toFixed(2)}` },
             current: {
               temp_c: data.current_weather.temperature,
-              condition: {
-                text: `Wind: ${data.current_weather.windspeed} km/h`
-              },
+              condition: { text: `Wind: ${data.current_weather.windspeed} km/h` },
               time: dayjs(time).format('MMMM D, YYYY h:mm A')
             }
           });
@@ -67,7 +71,7 @@ export default function ServicesPage() {
       toast.error("Geolocation not supported");
     }
   };
-  const [showAllPrices, setShowAllPrices] = useState(false);
+
   const fetchPrices = async () => {
     try {
       const res = await fetch("https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b&format=json&limit=10");
@@ -88,69 +92,65 @@ export default function ServicesPage() {
 
   const displayedPrices = showAllPrices ? marketPrices : marketPrices.slice(0, 5);
 
-  return (
+  return isAuthenticated === null ? (
+    <div />
+  ) : isAuthenticated === false ? (
+    <LoginRequired />
+  ) : (
     <section className="relative bg-green-50 py-12">
       <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
       <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
 
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-1 gap-12 mt-12">
-          {/* Weather Section */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">🌤️ Live Weather Info</h2>
-            {weather ? (
-              <div className="space-y-2 text-sm text-center">
-                <p><strong>📍 Location:</strong> {weather.location.name}, {weather.location.region}</p>
-                <p><strong>🌡 Temperature:</strong> {weather.current.temp_c}°C</p>
-                <p><strong>💨 Condition:</strong> {weather.current.condition.text}</p>
-                <p><strong>🕒 Time:</strong> {weather.current.time}</p>
-              </div>
-            ) : <p className="text-center">Loading weather data...</p>}
-          </div>
-
-          {/* Mandi Price Section */}
-
-
-          <div><div className="w-full">
-            <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-              Price  Data
-            </h2>
-            <div className="bg-white rounded-lg shadow p-6 overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Commodity</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Market</TableHead>
-                    <TableHead>Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {displayedPrices.map((price, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell>{price.commodity}</TableCell>
-                      <TableCell>₹{price.value.toFixed(2)}</TableCell>
-                      <TableCell>{price.market}</TableCell>
-                      <TableCell>{price.arrival_date}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {!showAllPrices && (
-                <div className="text-center mt-4">
-                  <button
-                    className="text-blue-600 hover:underline text-sm"
-                    onClick={() => setShowAllPrices(true)}
-                  >
-                    Show more
-                  </button>
-                </div>
-              )}
+        {/* WEATHER */}
+        <div className="bg-white rounded-lg shadow p-6 mb-12">
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">🌤️ Live Weather Info</h2>
+          {weather ? (
+            <div className="space-y-2 text-sm text-center">
+              <p><strong>📍 Location:</strong> {weather.location.name}, {weather.location.region}</p>
+              <p><strong>🌡 Temperature:</strong> {weather.current.temp_c}°C</p>
+              <p><strong>💨 Condition:</strong> {weather.current.condition.text}</p>
+              <p><strong>🕒 Time:</strong> {weather.current.time}</p>
             </div>
-          </div></div>
+          ) : <p className="text-center">Loading weather data...</p>}
+        </div>
 
-        </div >
-        {/* Services Section */}
+        {/* PRICE TABLE */}
+        <div className="bg-white rounded-lg shadow p-6 overflow-x-auto mb-12">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Price Data</h2>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Commodity</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Market</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedPrices.map((price, idx) => (
+                <TableRow key={idx}>
+                  <TableCell>{price.commodity}</TableCell>
+                  <TableCell>₹{price.value.toFixed(2)}</TableCell>
+                  <TableCell>{price.market}</TableCell>
+                  <TableCell>{price.arrival_date}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {!showAllPrices && (
+            <div className="text-center mt-4">
+              <button
+                className="text-blue-600 hover:underline text-sm"
+                onClick={() => setShowAllPrices(true)}
+              >
+                Show more
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* SMART SERVICES */}
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8 mt-16">
           🌿 Our Smart Farming Services
         </h1>
@@ -162,23 +162,16 @@ export default function ServicesPage() {
                 description: "Get precise predictions for crop yields and growth.",
                 href: "/services/crop-prediction",
               },
-              // {
-              //   name: "🐛 Pest Prediction",
-              //   description: "Identify and manage potential pest infestations.",
-              //   href: "/services/pest-prediction",
-              // },
               {
                 name: "🧪 Soil Health",
                 description: "Monitor and improve soil health for sustainable farming.",
                 href: "/services/soil-health",
               },
             ].map((service, index) => (
-              <div key={index} className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition ">
+              <div key={index} className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">{service.name}</h2>
                 <p className="text-gray-600 mb-4">{service.description}</p>
-                <a href={service.href} className="text-blue-600 hover:underline">
-                  Learn More →
-                </a>
+                <a href={service.href} className="text-blue-600 hover:underline">Learn More →</a>
               </div>
             ))}
           </div>

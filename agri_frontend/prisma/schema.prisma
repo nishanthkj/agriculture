@@ -53,16 +53,25 @@ model Worker {
 }
 
 model SoilData {
-  id          String   @id @default(uuid())
-  userId      String
-  nitrogen    Float
-  phosphorous Float
-  potassium   Float
-  ph          Float
-  rainfall    Float
-  state       String
-  city        String
-  createdAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  N              Float
+  P              Float
+  K              Float
+  pH             Float
+  EC             Float
+  OC             Float
+  S              Float
+  Zn             Float
+  Fe             Float
+  Cu             Float
+  Mn             Float
+  B              Float
+  fertilityClass String
+  confidence     Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  @@index([userId])
 }

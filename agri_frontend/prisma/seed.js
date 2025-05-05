@@ -9,7 +9,7 @@ async function main() {
     update: {},
     create: {
       name: 'Nishanth K J',
-      email: 'Nishanthkj12@gmail.com',
+      email: 'nishanthkj12@gmail.com',
       password: "$2b$10$9K4M/Xu43VrNdCIXYQkzre4aQBkq5QKdZ1g/TI3qmV.Ylkf24PimS", // Hashed "AdminAdmin"
       role: 'FARMER',
     },
@@ -53,31 +53,52 @@ async function main() {
 
   console.log('🌱 Seeding soil data...');
 
+  // await prisma.soilData.createMany({
+  //   data: [
+  //     {
+  //       userId: user.id,
+  //       nitrogen: 3.67,
+  //       phosphorous: 1.95,
+  //       potassium: 4.68,
+  //       ph: 6.21,
+  //       rainfall: 60.8,
+  //       state: 'Ohio',
+  //       city: 'Richardburgh',
+  //     },
+  //     {
+  //       userId: user.id,
+  //       nitrogen: 1.01,
+  //       phosphorous: 3.38,
+  //       potassium: 4.49,
+  //       ph: 6.67,
+  //       rainfall: 212.08,
+  //       state: 'Hawaii',
+  //       city: 'Martinezmouth',
+  //     },
+  //   ],
+  // });
   await prisma.soilData.createMany({
     data: [
       {
         userId: user.id,
-        nitrogen: 3.67,
-        phosphorous: 1.95,
-        potassium: 4.68,
-        ph: 6.21,
-        rainfall: 60.8,
-        state: 'Ohio',
-        city: 'Richardburgh',
-      },
-      {
-        userId: user.id,
-        nitrogen: 1.01,
-        phosphorous: 3.38,
-        potassium: 4.49,
-        ph: 6.67,
-        rainfall: 212.08,
-        state: 'Hawaii',
-        city: 'Martinezmouth',
+        N: 1.1,
+        P: 2.2,
+        K: 3.3,
+        pH: 6.5,
+        EC: 0.5,
+        OC: 0.7,
+        S: 10,
+        Zn: 0.8,
+        Fe: 1.5,
+        Cu: 0.9,
+        Mn: 0.6,
+        B: 0.4,
+        fertilityClass: 'High',
+        confidence: 0.94,
       },
     ],
   });
-
+  
   console.log('✅ Seeding complete!');
 }
 

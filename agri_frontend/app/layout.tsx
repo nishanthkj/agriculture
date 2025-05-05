@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import NavBar from "@/components/NavBar/NavBar";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,14 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-                <Toaster />
-
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Toaster position="top-right" />
         <NavBar />
         {children}
-
       </body>
     </html>
   );
