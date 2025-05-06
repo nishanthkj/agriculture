@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import NavBar from "@/components/NavBar/NavBar";
+import ChatBotWidget from '@/components/ChatBotWidget/ChatBotWidget';
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
         <Toaster position="top-right" />
         <NavBar />
         {children}
+        <ChatBotWidget />
       </body>
     </html>
   );
