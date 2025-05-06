@@ -20,12 +20,12 @@ export default function AboutPage() {
       },
       {
         name: "Skanda P M",
-        role: "UI/UX, & Graphic Designer",
+        role: "UI/UX,  Graphic Designer &  AI/ML",
         github: "https://github.com/Sk2003pm",
       },
       {
         name: "Likith D",
-        role: "UI/UX & Frontend Developer",
+        role: "UI/UX , Frontend Developer & API Integration",
         github: "https://github.com/likithsurya23",
       },
       {
