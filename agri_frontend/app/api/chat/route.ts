@@ -1,76 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { pipeline } from '@xenova/transformers'
-import type { TextGenerationPipeline } from '@xenova/transformers'
+import { GoogleGenAI } from "@google/genai";
 
-let generator: TextGenerationPipeline | null = null
+// Initialize GoogleGenAI with your API key
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    console.log('📥 Incoming /api/chat request:', body)
+    const body = await req.json();
+    console.log('📥 Incoming /api/chat request:', body);
 
-    const { message, soilData, userName } = body
+    const { message, soilData, userName } = body;
 
+    // Check for required fields in the request body
     if (!message || !userName) {
-      return NextResponse.json({ error: 'Missing message or userName' }, { status: 400 })
+      return NextResponse.json({ error: 'Missing message or userName' }, { status: 400 });
     }
 
+    // Create the prompt for the generative AI
     const prompt = `
-You are Agri Bot 🌿, a helpful assistant for farmers and agriculture students.
+    You are Agri Bot 🌿, a helpful assistant for farmers and agriculture students.
 
-User: ${userName}
-Soil Data: ${JSON.stringify(soilData || {})}
-Question: ${message}
+    User: ${userName}
+    Soil Data: ${JSON.stringify(soilData || {})}
+    Question: ${message}
 
-Give a clear, helpful, and practical response.
-`.trim()
+    Respond in a short and friendly way, like a chat. Be helpful and to the point!
+    `.trim();
 
-    let response = ''
+    let response = '';
 
-    // Try local LLM using Xenova's deepseek-llm-3b-base
+    // Try to generate the response using the Google Gemini model
     try {
-      if (!generator) {
-        generator = await pipeline('text-generation', 'Xenova/deepseek-llm-3b-base')
-      }
+      // Send the request to the Gemini API
+      const geminiResponse = await ai.models.generateContent({
+        model: "gemini-2.0-flash", // Specify the model
+        contents: prompt, // Provide the prompt to the model
+      });
 
-      const output = await generator(prompt, {
-        max_new_tokens: 150,
-        temperature: 0.7,
-        top_k: 50,
-        top_p: 0.9,
-        do_sample: true,
-      })
-
-      if (Array.isArray(output) && output.length > 0 && 'generated_text' in output[0]) {
-        const generatedText = output[0].generated_text as string;
-        response = generatedText.replace(prompt, '').trim()
-        console.log('✅ Local LLM Response:', response)
+      // Check the response for the generated text
+      if (geminiResponse.text) {
+        response = geminiResponse.text;
+        console.log('✅ Gemini Response:', response);
       } else {
-        throw new Error('Invalid local LLM output')
+        throw new Error('Invalid response from Gemini API');
       }
-    } catch (localError) {
-      console.warn('⚠️ Local LLM failed. Falling back to Gemini.', localError)
-
-      const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-          }),
-        }
-      )
-
-      const data = await geminiRes.json()
-      response =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        'Sorry, I could not generate a response.'
+    } catch (geminiError) {
+      console.error('⚠️ Error during Gemini API request:', geminiError);
+      response = 'Oops, something went wrong! Let me try again.';
     }
 
-    return NextResponse.json({ response })
+    // Return the generated response
+    return NextResponse.json({ response });
   } catch (error) {
-    console.error('❌ Chat API Error:', error)
-    return NextResponse.json({ error: 'Something went wrong in the chat API.' }, { status: 500 })
+    console.error('❌ Chat API Error:', error);
+    return NextResponse.json({ error: 'Something went wrong in the chat API.' }, { status: 500 });
   }
 }
