@@ -19,11 +19,6 @@ export default function AboutPage() {
         github: "https://github.com/nishanthkj",
       },
       {
-        name: "Skanda P M",
-        role: "UI/UX,  Graphic Designer &  AI/ML",
-        github: "https://github.com/Sk2003pm",
-      },
-      {
         name: "Likith D",
         role: "UI/UX , Frontend Developer & API Integration",
         github: "https://github.com/likithsurya23",
@@ -32,6 +27,11 @@ export default function AboutPage() {
         name: "Harshavardhan T",
         role: "Backend Developer & Domain Expertise in AI/ML",
         github: "https://github.com/S-harshavardhana",
+      },
+      {
+        name: "Skanda P M",
+        role: "UI/UX,  Graphic Designer &  QA",
+        github: "https://github.com/Sk2003pm",
       },
     ];
 
