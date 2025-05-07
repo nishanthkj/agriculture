@@ -157,15 +157,16 @@ export default function ServicesPage() {
         <div className="w-full flex justify-center">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 text-center items-center justify-center">
             {[
-              {
-                name: "🌾 Crop Prediction",
-                description: "Get precise predictions for crop yields and growth.",
-                href: "/services/crop-prediction",
-              },
+             
               {
                 name: "🧪 Soil Health",
                 description: "Monitor and improve soil health for sustainable farming.",
                 href: "/services/soil-health",
+              },
+              {
+                name: "🌾 Crop Prediction",
+                description: "Get precise predictions for crop yields and growth.",
+                href: "/services/crop-prediction",
               },
             ].map((service, index) => (
               <div key={index} className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition">
