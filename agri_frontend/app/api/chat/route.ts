@@ -1,58 +1,74 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextResponse } from "next/server";
 
-// Initialize GoogleGenAI with your API key
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Directly using the API key
+const genAI = new GoogleGenerativeAI("AIzaSyAq8cBIhCisIJGryNpgwmhLIJGj_rJZp_8");
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log('📥 Incoming /api/chat request:', body);
+    const { message, conversationHistory = [] } = body;
 
-    const { message, soilData, userName } = body;
-
-    // Check for required fields in the request body
-    if (!message || !userName) {
-      return NextResponse.json({ error: 'Missing message or userName' }, { status: 400 });
+    if (!message) {
+      return NextResponse.json(
+        { error: "Message is required" },
+        { status: 400 }
+      );
     }
 
-    // Create the prompt for the generative AI
-    const prompt = `
-    You are Agri Bot 🌿, a helpful assistant for farmers and agriculture students.
+    // Agricultural knowledge instructions
+    const agriculturalKnowledge = `
+    You are AgriBot, an expert AI assistant specialized in all aspects of agriculture. Your knowledge includes:
 
-    User: ${userName}
-    Soil Data: ${JSON.stringify(soilData || {})}
-    Question: ${message}
+    1. Crop Cultivation: Planting techniques, growth stages, harvesting methods
+    2. Soil Science: Soil types, testing, amendments, fertility management
+    3. Pest Management: Identification, organic and chemical control methods
+    4. Irrigation: Water requirements, systems, scheduling
+    5. Fertilizers: Types, application rates, timing
+    6. Weather Impact: Effects on crops, mitigation strategies
+    7. Agricultural Equipment: Tools, machinery, maintenance
+    8. Organic Farming: Certification, practices, benefits
+    9. Government Schemes: Subsidies, support programs
+    10. Market Trends: Pricing, demand, best crops to grow
 
-    Respond in a short and friendly way, like a chat. Be helpful and to the point!
-    `.trim();
+    Response Guidelines:
+    - Be precise and factual
+    - Use simple language for farmers of all education levels
+    - Provide actionable advice
+    - Break complex information into bullet points when helpful
+    - If unsure, say you don't know rather than guessing
+    - For non-agricultural questions, politely redirect
+    `;
 
-    let response = '';
+    // Format conversation history
+    const history = conversationHistory.map((msg: any) => ({
+      role: msg.role === "user" ? "user" : "model",
+      parts: [{ text: msg.content }],
+    }));
 
-    // Try to generate the response using the Google Gemini model
-    try {
-      // Send the request to the Gemini API
-      const geminiResponse = await ai.models.generateContent({
-        model: "gemini-2.0-flash", // Specify the model
-        contents: prompt, // Provide the prompt to the model
-      });
+    // Get the generative model
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-pro",
+      systemInstruction: {
+        role: "model",
+        parts: [{ text: agriculturalKnowledge }],
+      },
+    });
 
-      // Check the response for the generated text
-      if (geminiResponse.text) {
-        response = geminiResponse.text;
-        console.log('✅ Gemini Response:', response);
-      } else {
-        throw new Error('Invalid response from Gemini API');
-      }
-    } catch (geminiError) {
-      console.error('⚠️ Error during Gemini API request:', geminiError);
-      response = 'Oops, something went wrong! Let me try again.';
-    }
+    // Start chat with history
+    const chat = model.startChat({ history });
 
-    // Return the generated response
-    return NextResponse.json({ response });
+    // Send message and get response
+    const result = await chat.sendMessage(message);
+    const response = await result.response;
+    const text = response.text();
+
+    return NextResponse.json({ response: text });
   } catch (error) {
-    console.error('❌ Chat API Error:', error);
-    return NextResponse.json({ error: 'Something went wrong in the chat API.' }, { status: 500 });
+    console.error("Error in agricultural chatbot:", error);
+    return NextResponse.json(
+      { error: "Unable to process your agricultural query. Please try again." },
+      { status: 500 }
+    );
   }
 }

@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "/components/NavBar.jsx", "prisma/seed.js", "app/services/page.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "/components/NavBar.jsx", "prisma/seed.js", "app/services/page.tsx", "app/agriculture-chatbot/page.jsx", "app/agriculture-chatbot/Message.jsx", "app/agriculture-chatbot/ChatInterface.jsx", "components/ChatBotWidget/ChatBotWidget.tsx"],
   "exclude": ["node_modules"]
 }
