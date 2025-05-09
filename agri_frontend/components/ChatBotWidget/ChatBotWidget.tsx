@@ -1,10 +1,11 @@
 'use client'
 
 import { useEffect, useState, useRef } from 'react'
-import { Loader2, Send, Bot, User } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Bot, User as UserIcon, LogIn } from 'lucide-react'
 
 interface Message {
-  sender: 'user' | 'AgriBot'
+  sender: 'user' | 'bot'
   text: string
   timestamp: Date
 }
@@ -12,14 +13,7 @@ interface Message {
 interface User {
   name: string
   email: string
-}
-
-interface SoilData {
-  pH?: number
-  nitrogen?: number
-  phosphorus?: number
-  potassium?: number
-  moisture?: number
+  avatar?: string
 }
 
 export default function ChatBotWidget() {
@@ -27,79 +21,65 @@ export default function ChatBotWidget() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [user, setUser] = useState<User | null>(null)
-  const [soilData, setSoilData] = useState<SoilData | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [soilData, setSoilData] = useState<Record<string, number> | null>(null)
+  const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Sample agricultural questions for quick start
-  const sampleQuestions = [
-    "What crops grow best in my soil type?",
-    "How to improve soil fertility?",
-    "Best pest control methods for organic farming",
-    "When should I harvest my crops?"
-  ]
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
-  // Fetch user and soil data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user data
         const userRes = await fetch('/api/auth/profile', { credentials: 'include' })
         if (userRes.ok) {
           const userData = await userRes.json()
           setUser(userData.user)
-          
-          // Initial bot greeting
-          setMessages([{
-            sender: 'AgriBot',
-            text: `🌿 Hello ${userData.user.name}! I'm AgriBot, your agricultural assistant. How can I help you today?`,
-            timestamp: new Date()
-          }])
+          setMessages(prev => [
+            ...prev,
+            {
+              sender: 'bot',
+              text: `🌿 Hi ${userData.user.name}, I'm AgriBot — your agriculture assistant! Ask me anything about crops, soil, or farming.`,
+              timestamp: new Date()
+            }
+          ])
         } else {
-          setMessages([{
-            sender: 'AgriBot',
-            text: '🌾 Welcome! Please log in to get personalized agricultural advice.',
-            timestamp: new Date()
-          }])
+          setMessages([
+            {
+              sender: 'bot',
+              text: '🌾 Welcome! Please login to get personalized agriculture advice.',
+              timestamp: new Date()
+            }
+          ])
         }
 
-        // Fetch soil data
-        const soilRes = await fetch('/api/soil', { 
-          credentials: 'include', 
-          cache: 'no-store' 
-        })
+        const soilRes = await fetch('/api/soil', { credentials: 'include', cache: 'no-store' })
         if (soilRes.ok) {
           const soilData = await soilRes.json()
           setSoilData(soilData)
         }
-      } catch (error) {
-        console.error('Error fetching data:', error)
+      } catch (err) {
+        console.error('Error fetching data:', err)
       }
     }
 
     fetchData()
   }, [])
 
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
   const handleSend = async () => {
-    if (!input.trim() || !user || isLoading) return
+    if (!input.trim()) return
 
-    // Add user message
-    const userMsg: Message = { 
-      sender: 'user', 
-      text: input, 
-      timestamp: new Date() 
+    const userMsg: Message = {
+      sender: 'user',
+      text: input,
+      timestamp: new Date()
     }
     setMessages(prev => [...prev, userMsg])
     setInput('')
-    setIsLoading(true)
+    setIsTyping(true)
 
     try {
-      // Send to API
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,32 +87,31 @@ export default function ChatBotWidget() {
         body: JSON.stringify({
           message: input,
           soilData,
-          userName: user.name,
-          conversationHistory: messages
-            .filter(m => m.sender === 'user')
-            .map(m => ({ role: m.sender, content: m.text }))
+          userName: user?.name || 'Guest'
         }),
       })
 
-      if (!res.ok) throw new Error('API response not OK')
-
-      const { response } = await res.json()
-      const botMsg: Message = { 
-        sender: 'AgriBot', 
-        text: response, 
-        timestamp: new Date() 
-      }
-      setMessages(prev => [...prev, botMsg])
-    } catch (error) {
-      console.error('Chat error:', error)
-      const errorMsg: Message = { 
-        sender: 'AgriBot', 
-        text: '⚠️ Sorry, I encountered an error. Please try again later.', 
-        timestamp: new Date() 
-      }
-      setMessages(prev => [...prev, errorMsg])
+      const data = await res.json()
+      setMessages(prev => [
+        ...prev,
+        {
+          sender: 'bot',
+          text: data.response,
+          timestamp: new Date()
+        }
+      ])
+    } catch (err) {
+      console.error('Chat API error:', err)
+      setMessages(prev => [
+        ...prev,
+        {
+          sender: 'bot',
+          text: '❌ Error: Unable to respond. Please try again later.',
+          timestamp: new Date()
+        }
+      ])
     } finally {
-      setIsLoading(false)
+      setIsTyping(false)
     }
   }
 
@@ -142,126 +121,149 @@ export default function ChatBotWidget() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
-      {/* Floating action button */}
-      <button
+      <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all ${isOpen ? 'bg-green-800' : 'bg-green-700 hover:bg-green-600'}`}
-        aria-label="Open AgriBot"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`relative flex items-center justify-center w-14 h-14 rounded-full shadow-lg ${
+          isOpen ? 'bg-green-700' : 'bg-green-600'
+        } text-white`}
+        aria-label="AgriBot Chat"
       >
-        {isLoading && isOpen ? (
-          <Loader2 className="h-6 w-6 text-white animate-spin" />
-        ) : (
-          <Bot className="h-6 w-6 text-white" />
+        <Bot className="w-6 h-6" />
+        {messages.length > 0 && !isOpen && (
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500"></span>
+          </span>
         )}
-      </button>
+      </motion.button>
 
-      {/* Chat window */}
-      {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 h-[28rem] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl flex flex-col overflow-hidden">
-          {/* Header */}
-          <div className="bg-green-700 text-white p-3 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Bot className="h-5 w-5" />
-              <h3 className="font-semibold">AgriBot Assistant</h3>
-            </div>
-            <button 
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:text-gray-200"
-              aria-label="Close chat"
-            >
-              ×
-            </button>
-          </div>
-
-          {/* Messages area */}
-          <div className="flex-1 p-3 overflow-y-auto space-y-3">
-            {messages.length === 0 ? (
-              <div className="text-center text-gray-500 py-4">
-                Loading AgriBot...
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            className="absolute bottom-20 right-0 w-80 h-[28rem] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl flex flex-col overflow-hidden"
+          >
+            <div className="flex items-center justify-between p-3 bg-green-600 text-white">
+              <div className="flex items-center space-x-2">
+                <Bot className="w-5 h-5" />
+                <h3 className="font-semibold">AgriBot Assistant</h3>
               </div>
-            ) : (
-              messages.map((msg, i) => (
-                <div 
-                  key={i} 
-                  className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1 rounded-full hover:bg-green-700 transition-colors"
+                aria-label="Close chat"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <div 
-                    className={`max-w-[80%] rounded-lg p-3 flex flex-col ${msg.sender === 'user' 
-                      ? 'bg-green-100 dark:bg-green-900 text-gray-800 dark:text-gray-200' 
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="flex-1 p-3 overflow-y-auto bg-gray-50 dark:bg-gray-700">
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className={`mb-3 flex ${msg.sender === 'bot' ? 'justify-start' : 'justify-end'}`}
+                >
+                  <div
+                    className={`max-w-xs md:max-w-md rounded-lg px-3 py-2 ${
+                      msg.sender === 'bot'
+                        ? 'bg-green-100 dark:bg-gray-600 text-gray-800 dark:text-gray-100'
+                        : 'bg-blue-100 dark:bg-blue-900 text-gray-800 dark:text-gray-100'
+                    }`}
                   >
-                    <div className="flex items-center space-x-2 mb-1">
-                      {msg.sender === 'user' ? (
-                        <User className="h-4 w-4" />
+                    <div className="flex items-center mb-1">
+                      {msg.sender === 'bot' ? (
+                        <Bot className="w-4 h-4 mr-1 text-green-600 dark:text-green-400" />
                       ) : (
-                        <Bot className="h-4 w-4" />
+                        <UserIcon className="w-4 h-4 mr-1 text-blue-600 dark:text-blue-400" />
                       )}
-                      <span className="font-medium text-xs">
-                        {msg.sender === 'user' ? user?.name : 'AgriBot'}
+                      <span className="text-xs font-medium">
+                        {msg.sender === 'bot' ? 'AgriBot' : user?.name || 'You'}
                       </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
                         {formatTime(msg.timestamp)}
                       </span>
                     </div>
                     <p className="text-sm">{msg.text}</p>
                   </div>
-                </div>
-              ))
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input area */}
-          <div className="border-t border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900">
-            {user ? (
-              <>
-                {/* Sample questions */}
-                {messages.length <= 1 && (
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {sampleQuestions.map((question, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setInput(question)}
-                        className="text-xs px-2 py-1 bg-green-50 dark:bg-gray-700 text-green-800 dark:text-green-300 rounded-full hover:bg-green-100 dark:hover:bg-gray-600"
-                      >
-                        {question}
-                      </button>
-                    ))}
+                </motion.div>
+              ))}
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mb-3 flex justify-start"
+                >
+                  <div className="bg-green-100 dark:bg-gray-600 rounded-lg px-3 py-2">
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-bounce"></div>
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                    </div>
                   </div>
-                )}
+                </motion.div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
 
-                {/* Input field */}
-                <div className="flex space-x-2">
+            <div className="border-t border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-800">
+              {user ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    handleSend()
+                  }}
+                  className="flex space-x-2"
+                >
                   <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
                     placeholder="Ask about crops, soil, weather..."
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 dark:bg-gray-800 dark:text-white"
-                    disabled={isLoading}
+                    disabled={isTyping}
                   />
                   <button
-                    onClick={handleSend}
-                    disabled={!input.trim() || isLoading}
-                    className="p-2 bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    type="submit"
+                    disabled={!input.trim() || isTyping}
+                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 text-white rounded-lg px-3 py-2 text-sm transition-colors"
                   >
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
+                    Send
                   </button>
+                </form>
+              ) : (
+                <div className="text-center p-2">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                    Please login to chat with AgriBot
+                  </div>
+                  <a
+                    href="/login"
+                    className="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm transition-colors"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Login
+                  </a>
                 </div>
-              </>
-            ) : (
-              <div className="text-center py-2 text-sm text-red-500 dark:text-red-400">
-                Please <a href="/login" className="underline font-medium">log in</a> to chat with AgriBot
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -229,7 +229,6 @@ export default function CropPredictionPage() {
           </ul>
         </div>
       )} */}
-      
     {result?.response && (
   <div className="mt-6 p-4 bg-yellow-100 border rounded text-sm whitespace-pre-wrap">
     <strong>🌾 AI Full Response:</strong>

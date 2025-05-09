@@ -30,7 +30,7 @@ export default function AboutPage() {
       },
       {
         name: "Skanda P M",
-        role: "UI/UX,  Graphic Designer &  QA",
+        role: "UI/UX,  Graphic Designer &  AI",
         github: "https://github.com/Sk2003pm",
       },
     ];
