@@ -1,58 +1,173 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai'
 
-// Initialize GoogleGenAI with your API key
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Enhanced Type definitions
+interface ChatRequest {
+  message: string
+  userName: string
+  soilData?: Record<string, number>
+  location?: string
+  cropType?: string
+}
 
-export async function POST(req: NextRequest) {
+interface ChatResponse {
+  response: string
+  relatedTopics?: string[]
+}
+
+interface ErrorResponse {
+  error: string
+  details?: string
+}
+
+// Initialize Gemini AI with safety settings
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+const model = genAI.getGenerativeModel({ 
+  model: "gemini-1.5-flash",
+  safetySettings: [
+    {
+      category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+      threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    },
+    {
+      category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+      threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+    },
+  ],
+})
+
+export async function POST(req: NextRequest): Promise<NextResponse<ChatResponse | ErrorResponse>> {
   try {
-    const body = await req.json();
-    console.log('📥 Incoming /api/chat request:', body);
+    const body: ChatRequest = await req.json()
+    console.log('📥 Incoming /api/chat request:', JSON.stringify(body, null, 2))
 
-    const { message, soilData, userName } = body;
+    const { message, soilData, userName, location, cropType } = body
 
-    // Check for required fields in the request body
-    if (!message || !userName) {
-      return NextResponse.json({ error: 'Missing message or userName' }, { status: 400 });
+    // Validate request body
+    if (!message?.trim()) {
+      return NextResponse.json(
+        { error: 'Message is required' },
+        { status: 400 }
+      )
     }
 
-    // Create the prompt for the generative AI
+    if (!userName?.trim()) {
+      return NextResponse.json(
+        { error: 'userName is required' },
+        { status: 400 }
+      )
+    }
+
+    // Create the enhanced prompt
     const prompt = `
-    You are Agri Bot 🌿, a helpful assistant for farmers and agriculture students.
+    You are AgriBot 🌾, an expert AI assistant for all agriculture-related topics including:
+    - Soil fertility and analysis
+    - Crop yield predictions
+    - Market price trends
+    - Pest and disease identification
+    - Farming techniques
+    - Weather impacts on agriculture
+    - Sustainable farming practices
 
-    User: ${userName}
-    Soil Data: ${JSON.stringify(soilData || {})}
-    Question: ${message}
+    User Context:
+    - Name: ${userName}
+    ${location ? `- Location: ${location}` : ''}
+    ${cropType ? `- Crop Type: ${cropType}` : ''}
+    ${soilData ? `- Soil Data: ${formatSoilData(soilData)}` : ''}
 
-    Respond in a short and friendly way, like a chat. Be helpful and to the point!
-    `.trim();
+    Current Question: "${message}"
 
-    let response = '';
+    Response Guidelines:
+    1. Provide accurate, practical agricultural advice
+    2. Keep responses concise (2-3 sentences)
+    3. Use simple language suitable for farmers
+    4. Include relevant emojis
+    5. For predictions, indicate confidence level
+    6. Suggest preventive measures for pests/diseases
+    7. Mention local considerations if location provided
 
-    // Try to generate the response using the Google Gemini model
-    try {
-      // Send the request to the Gemini API
-      const geminiResponse = await ai.models.generateContent({
-        model: "gemini-2.0-flash", // Specify the model
-        contents: prompt, // Provide the prompt to the model
-      });
+    Examples of good responses:
+    - "For your rice crop in ${location || 'your region'}, common pests are brown plant hoppers 🦗. Apply neem oil weekly as prevention."
+    - "Current wheat prices are ₹2,100/quintal 📈, expected to rise 5% next month."
+    - "Your soil pH of ${soilData?.pH || 'X'} is ideal for tomatoes 🍅. Add compost for better yield."
 
-      // Check the response for the generated text
-      if (geminiResponse.text) {
-        response = geminiResponse.text;
-        console.log('✅ Gemini Response:', response);
-      } else {
-        throw new Error('Invalid response from Gemini API');
+    Now provide your expert response:
+    `.trim()
+
+    // Generate content
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.9,
+        maxOutputTokens: 350,
       }
-    } catch (geminiError) {
-      console.error('⚠️ Error during Gemini API request:', geminiError);
-      response = 'Oops, something went wrong! Let me try again.';
+    })
+
+    const response = await result.response
+    const text = response.text()
+
+    if (!text) {
+      throw new Error('Empty response from Gemini API')
     }
 
-    // Return the generated response
-    return NextResponse.json({ response });
-  } catch (error) {
-    console.error('❌ Chat API Error:', error);
-    return NextResponse.json({ error: 'Something went wrong in the chat API.' }, { status: 500 });
+    // Generate related topics
+    const relatedTopics = await generateRelatedTopics(message)
+
+    console.log('✅ Generated response:', text)
+
+    return NextResponse.json({ 
+      response: text,
+      ...(relatedTopics.length > 0 && { relatedTopics })
+    })
+
+  } catch (error: unknown) {
+    console.error('❌ Chat API Error:', error)
+    
+    const userFriendlyError = "Sorry, I'm having trouble answering right now. 🌧️ Please try again later."
+    const errorDetails = error instanceof Error ? error.message : 'Unknown error'
+    
+    return NextResponse.json(
+      { 
+        error: userFriendlyError,
+        ...(process.env.NODE_ENV === 'development' && { details: errorDetails })
+      },
+      { status: 500 }
+    )
+  }
+}
+
+// Helper functions
+function formatSoilData(data: Record<string, number>): string {
+  return Object.entries(data)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join(', ')
+}
+
+async function generateRelatedTopics(question: string): Promise<string[]> {
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+    
+    const prompt = `
+    Based on this agricultural question: "${question}"
+    Suggest 3 related topics farmers might want to know about.
+    Return as a JSON array of strings.
+    
+    Example: ["Pest control methods", "Optimal planting season", "Soil nutrient management"]
+    `.trim()
+
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.5,
+        maxOutputTokens: 150
+      }
+    })
+
+    const response = await result.response.text()
+    return JSON.parse(response) as string[]
+  } catch {
+    return [] // Return empty if fails
   }
 }
