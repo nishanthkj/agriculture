@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     })
 
     // ✅ Create JWT and set in cookies
-    const token = generateToken({ id: user.id, email: user.email })
+    const token = generateToken({ id: user.id, email: user.email, role:user.role })
 
     const cookieStore = await cookies() // Awaiting cookies to get the correct object
     cookieStore.set('token', token, {

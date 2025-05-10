@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     console.log('Password valid for email:', email)
 
     // ✅ Generate JWT token
-    const token = generateToken({ id: user.id, email: user.email })
+    const token = generateToken({ id: user.id, email: user.email ,role:user.role })
     console.log('Generated JWT token:', token)
 
     // Set the token in HttpOnly cookies (server-side)
