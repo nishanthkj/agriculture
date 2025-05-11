@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-//import { console } from 'inspector';
+import { useRouter } from 'next/navigation';
+
+
 
 interface SoilData {
   N: number;
@@ -35,7 +37,8 @@ const states = ['Andhra Pradesh', 'Karnataka', 'Tamil Nadu', 'Maharashtra', 'Ker
 const seasons = ['Autumn', 'Kharif', 'Rabi', 'Summer', 'Winter'];
 const cropSuggestions = ['Millet', 'Barley', 'Soybean', 'Sunflower', 'Peanut'];
 
-export default function CropPredictionPage() {
+export default function CropPredictionPage(){
+  const router = useRouter(); 
   const [soilData, setSoilData] = useState<SoilData | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PredictionResponse | null>(null);
@@ -112,7 +115,7 @@ export default function CropPredictionPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-8 text-center">🌾 CROP YIELD & AI RECOMENDATION</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">🌾 CROP YIELD  AI RECOMENDATION</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
@@ -229,16 +232,27 @@ export default function CropPredictionPage() {
           </ul>
         </div>
       )} */}
-    {result?.response && (
-  <div className="mt-6 p-4 bg-yellow-100 border rounded text-sm whitespace-pre-wrap">
-    <strong>🌾 AI Full Response:</strong>
-    <pre className="mt-2 font-mono">{result.response}</pre>
-  </div>
-)}
+      {result?.response && (
+        <div className="mt-6 bg-white border border-yellow-300 rounded-xl shadow-lg p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-2xl"></span>
+            <h2 className="text-xl font-semibold text-yellow-700">AI Prediction Result:</h2>
+          </div>
 
-
-
-
+          <div className="bg-yellow-50 p-4 rounded-md border border-yellow-200">
+            <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono">{result.response}</pre>
+          </div>
+        </div>
+      )}
+      <Button 
+        variant="outline" 
+        onClick={() => router.push('/services')}
+        className="mb-8 gap-2 mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1"  viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd"/>
+        </svg>
+        Back 
+      </Button> 
     </div>
   );
 }

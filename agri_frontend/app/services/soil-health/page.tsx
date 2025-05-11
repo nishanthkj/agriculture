@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 const requiredFields = [
   'N', 'P', 'K', 'pH', 'EC', 'OC', 'S', 'Zn', 'Fe', 'Cu', 'Mn', 'B'
@@ -14,6 +15,7 @@ const requiredFields = [
 type SoilFormType = Record<typeof requiredFields[number] | 'fertilityClass' | 'confidence', string>;
 
 export default function SoilHealthPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState<Partial<SoilFormType>>({});
   const [loading, setLoading] = useState(false);
   const [isExisting, setIsExisting] = useState(false);
@@ -121,11 +123,19 @@ export default function SoilHealthPage() {
           />
         </div>
       ))}
-
-
       <Button onClick={handleSubmit} disabled={loading} className="w-full mt-4">
         {loading ? 'Processing...' : isExisting ? 'Update Record' : 'Submit'}
       </Button>
+
+      <Button 
+        variant="outline" 
+        onClick={() => router.push('/services')}
+        className="mb-8 gap-2 mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1"  viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd"/>
+        </svg>
+        Back 
+      </Button>    
     </div>
   );
 }
