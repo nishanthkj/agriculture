@@ -100,7 +100,7 @@ export default function SoilHealthPage() {
 
   return (
     <div className="max-w-xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-6">🧪 Soil Fertility Form</h1>
+      <h1 className="text-3xl font-bold mb-6">🧪 SOIL FERTILITY FORM</h1>
       {formData.fertilityClass && (
         <div className="mt-6 text-lg text-green-700 font-medium">
           🌾 Fertility Class: <strong>{formData.fertilityClass}</strong><br />

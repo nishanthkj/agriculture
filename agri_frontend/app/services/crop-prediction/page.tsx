@@ -112,7 +112,7 @@ export default function CropPredictionPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold mb-8 text-center">🌾 Crop Yield & AI Recommendation</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">🌾 CROP YIELD & AI RECOMENDATION</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
