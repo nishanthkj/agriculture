@@ -168,6 +168,13 @@ export default function ServicesPage() {
                 description: "Get precise predictions for crop yields and growth.",
                 href: "/services/crop-prediction",
               },
+
+              {
+                name: "🌾 Pest Prediction",
+                description: "Identify likely pests affecting your crops and get prevention and treatment advice.",
+                href: "/services/pest-prediction",
+                center: true,
+              },
             ].map((service, index) => (
               <div key={index} className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">{service.name}</h2>

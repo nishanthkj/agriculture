@@ -38,7 +38,7 @@ export default function HeroPage() {
               Get Started
             </a>
             <a
-              href="#about"
+              href="/about"
               className="px-6 py-3 border border-blue-600 text-blue-600 text-lg font-medium rounded hover:bg-blue-100 transition"
             >
               Learn More
