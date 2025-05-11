@@ -151,35 +151,51 @@ export default function ServicesPage() {
         </div>
 
         {/* SMART SERVICES */}
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8 mt-16">
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-12 mt-16">
           🌿 Our Smart Farming Services
         </h1>
         <div className="w-full flex justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 text-center items-center justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl px-4">
             {[
-             
               {
-                name: "🧪 Soil Health",
+                name: "Soil Health",
+                icon: "🧪",
                 description: "Monitor and improve soil health for sustainable farming.",
                 href: "/services/soil-health",
+                bgColor: "bg-amber-50",
               },
               {
-                name: "🌾 Crop Prediction",
+                name: "Crop Prediction",
+                icon: "🌾",
                 description: "Get precise predictions for crop yields and growth.",
                 href: "/services/crop-prediction",
+                bgColor: "bg-amber-50",
               },
-
               {
-                name: "🌾 Pest Prediction",
-                description: "Identify likely pests affecting your crops and get prevention and treatment advice.",
+                name: "Pest Prediction",
+                icon: "🐛",
+                description: "Identify likely pests affecting your crops and get prevention advice.",
                 href: "/services/pest-prediction",
-                center: true,
+                bgColor: "bg-amber-50",
               },
             ].map((service, index) => (
-              <div key={index} className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">{service.name}</h2>
-                <p className="text-gray-600 mb-4">{service.description}</p>
-                <a href={service.href} className="text-blue-600 hover:underline">Learn More →</a>
+              <div key={index} className={`${service.bgColor} p-6 rounded-2xl border border-gray-100 hover:border-green-200 transition-all duration-300 hover:shadow-md group`}>
+                <div className="flex items-start gap-4">
+                  <div className="text-3xl p-3 rounded-lg bg-white shadow-sm group-hover:scale-105 transition-transform">
+                    {service.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">{service.name}</h2>
+                    <p className="text-gray-600 mb-4">{service.description}</p>
+                    <a href={service.href} 
+                      className="inline-flex items-center text-green-600 hover:text-green-800 font-medium transition-colors">
+                      Learn More
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
